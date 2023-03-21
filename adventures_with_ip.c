@@ -4,8 +4,7 @@
  * Main source file. Contains main() and menu() functions.
  */
 #include "adventures_with_ip.h"
-#include "playaudio.h"
-#include "startupaudio.h"
+
 
 /* ---------------------------------------------------------------------------- *
  * 									main()										*
@@ -15,7 +14,7 @@
  * ---------------------------------------------------------------------------- */
 int main(void)
 {
-	xil_printf("Confuguring audio\r\n");
+	xil_printf("Entering Main\r\n");
 	//Configure the IIC data structure
 	IicConfig(XPAR_XIICPS_0_DEVICE_ID);
 
@@ -29,51 +28,32 @@ int main(void)
 
 	xil_printf("ADAU1761 configured\n\r");
 
-	//Initialise GPIO and NCO peripherals
+	/* Initialise GPIO and NCO peripherals */
 	gpio_init();
 	//nco_init(&Nco);
 
 	xil_printf("GPIO and NCO peripheral configured\r\n");
 
-	// Display interactive menu interface via terminal
-	//menu();
+	/* Display interactive menu interface via terminal */
+	xil_printf("STARTUP AUDIO PLAYINGGGGGGGGGGGGGGGGGGGGGGGGGG\n\r");
 
-	/*u32  in_left, in_right;
-	u32* left_audio_memory_ptr = startupaudio[0];
-	u32* right_audio_memory_ptr = startupaudio[1];
-	u32 samples_left = 278784;
+	while(1){
+		for (int i = 0; i < 278784; i++)
+		{
+			Xil_Out32(I2S_DATA_TX_L_REG, startupaudio[i][0]);
+			Xil_Out32(I2S_DATA_TX_R_REG, startupaudio[i][1]);
 
-	while(samples_left > 0) {
-
-		xil_printf("PLAYING AUDIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\r\n");
-
-		// while audio array is not yet over, output audio to LINE OUT
-		// Write audio output from storage array to codec
-
-		in_left  = *(left_audio_memory_ptr);
-		in_right = *(right_audio_memory_ptr);
-		left_audio_memory_ptr++;
-		right_audio_memory_ptr++;
-
-		samples_left--;
-
-		Xil_Out32(I2S_DATA_TX_L_REG, in_left);
-		Xil_Out32(I2S_DATA_TX_R_REG, in_right);
-
-		if (XUartPs_IsReceiveData(UART_BASEADDR)) {
-			if (XUartPs_ReadReg(UART_BASEADDR, XUARTPS_FIFO_OFFSET) == 'm'){
-				xil_printf("muted\r\n");
-
-				break;
+			if (XUartPs_IsReceiveData(UART_BASEADDR)) {
+				if (XUartPs_ReadReg(UART_BASEADDR, XUARTPS_FIFO_OFFSET) == 'q'){
+					break;
+				}
 			}
+
+			usleep(20);
 		}
-
-		usleep(20);
-
-	}*/
-
-	menu();
-
+		xil_printf("STARTUP AUDIO ENDINGGGGGGGGGGGGGGGGGGGGGGGGGG\n\r");
+	}
+	//menu();
     return 1;
 }
 
@@ -93,94 +73,6 @@ int main(void)
  *
  * 	This menu is shown upon exiting from any of the above options.
  * ---------------------------------------------------------------------------- */
-/*void menu(){
-
-	
-
-	u32 * left_audio_memory = malloc(sizeof(u32) * 240000); // 48,000 samples per second for 5 seconds
-	u32 * right_audio_memory = malloc(sizeof(u32) * 240000); // 48,000 samples per second for 5 seconds
-
-	u8 inp = 0x00;
-	u32 CntrlRegister;
-
-	// Turn off all LEDs 
-	//Xil_Out32(LED_BASE, 0);
-
-	CntrlRegister = XUartPs_ReadReg(UART_BASEADDR, XUARTPS_CR_OFFSET);
-
-	XUartPs_WriteReg(UART_BASEADDR, XUARTPS_CR_OFFSET,
-				  ((CntrlRegister & ~XUARTPS_CR_EN_DIS_MASK) |
-				   XUARTPS_CR_TX_EN | XUARTPS_CR_RX_EN));
-
-
-
-	// Wait for input from UART via the terminal
-
-	xil_printf("\r\n\r\n");
-	xil_printf("Embedded LMS Filtering Demo\r\n");
-	xil_printf("Enter 'r' to record and 'p' to playback.\r\nEnter '1' to playback fast and '2' to playback slowly\r\n");
-	xil_printf("----------------------------------------\r\n");
-
-
-
-	while (1){
-		if (!XUartPs_IsReceiveData(UART_BASEADDR)){
-			//UpdatePlaybackSpeedFromGpios();
-		}
-		else
-		{
-			inp = XUartPs_ReadReg(UART_BASEADDR, XUARTPS_FIFO_OFFSET);
-			// Select function based on UART input
-			switch(inp){
-			case 's':
-				xil_printf("STREAMING AUDIO\r\n");
-				xil_printf("Press 'q' to return to the main menu\r\n");
-				audio_stream();
-				break;
-			case 'n':
-				xil_printf("ENTERING NOISE GENERATION OPERATION\r\n");
-				xil_printf("Select step size via the DIP switches...\r\n\n");
-				xil_printf("Press 'q' to return to the main menu\r\n");
-				//tonal_noise();
-				break;
-			case 'f':
-				xil_printf("ENTERING LMS FILTERING OPERATION\r\n");
-				xil_printf("Press 'q' to return to the main menu\r\n");
-				//lms_filter();
-				break;
-			case 'r':
-				xil_printf("RECORDING AUDIO\r\n");
-				xil_printf("Press 'q' to return to the main menu\r\n");
-				record_audio(left_audio_memory, right_audio_memory);
-				break;
-			case 'p':
-				xil_printf("PLAYING BACK RECORDING\r\n");
-				xil_printf("Press 'q' to return to the main menu\r\n");
-				playback_audio(left_audio_memory, right_audio_memory);
-				break;
-			case '1':
-				xil_printf("FAST PLAY BACK\r\n");
-				xil_printf("Press 'q' to return to the main menu\r\n");
-				playback_audio_spedup(left_audio_memory, right_audio_memory);
-				break;
-			case '2':
-				xil_printf("SLOW PLAY BACK\r\n");
-				xil_printf("Press 'q' to return to the main menu\r\n");
-				playback_audio_sloweddown(left_audio_memory, right_audio_memory);
-				break;
-			default:
-				menu();
-				break;
-			} // switch
-
-			xil_printf("\r\n\r\n");
-			xil_printf("Embedded LMS Filtering Demo\r\n");
-			xil_printf("Enter 'r' to record and 'p' to playback.\r\nEnter '1' to playback fast and '2' to playback slowly\r\n");
-			xil_printf("----------------------------------------\r\n");
-		}
-	}
-} // menu()*/
-
 void menu(){
 
 	u32 * left_audio_memory = malloc(sizeof(u32) * 240000); // 48,000 samples per second for 5 seconds
@@ -190,7 +82,7 @@ void menu(){
 	u32 CntrlRegister;
 
 	/* Turn off all LEDs */
-	//Xil_Out32(LED_BASE, 0);
+	Xil_Out32(LED_BASE, 0);
 
 	CntrlRegister = XUartPs_ReadReg(UART_BASEADDR, XUARTPS_CR_OFFSET);
 

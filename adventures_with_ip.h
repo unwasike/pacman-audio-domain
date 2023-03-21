@@ -27,6 +27,8 @@
 //#include "lms_pcore_addr.h"
 //#include "xnco.h"
 
+#include "startupaudio.h"
+
 /* ---------------------------------------------------------------------------- *
  * 							Prototype Functions									*
  * ---------------------------------------------------------------------------- */
@@ -53,7 +55,7 @@ void playback_audio();
 #define UART_BASEADDR XPAR_PS7_UART_1_BASEADDR
 
 #define BUTTON_SWITCH_BASE XPAR_GPIO_1_BASEADDR
-//#define LED_BASE XPAR_LED_CONTROLLER_0_S00_AXI_BASEADDR
+#define LED_BASE XPAR_LED_CONTROLLER_0_S00_AXI_BASEADDR
 #define BUTTON_SWITCH_ID XPAR_GPIO_1_DEVICE_ID
 
 /* ---------------------------------------------------------------------------- *

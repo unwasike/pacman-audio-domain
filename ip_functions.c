@@ -1,4 +1,4 @@
- /*
+/*
  * ip_functions.c
  *
  * Contains all functions which pertain to setup and use of IP periperals.
@@ -255,8 +255,6 @@ void record_audio(u32* left_audio_memory, u32* right_audio_memory)
 		in_left = Xil_In32(I2S_DATA_RX_L_REG);
 		in_right = Xil_In32(I2S_DATA_RX_R_REG);
 
-		xil_printf("left - %d right - %d \r\n\r\n", in_left, in_right);
-
 		// Store in_left and in_right to memory for playback later
 		Xil_Out32(I2S_DATA_TX_L_REG, in_left);
 		Xil_Out32(I2S_DATA_TX_R_REG, in_right);
@@ -276,12 +274,13 @@ void record_audio(u32* left_audio_memory, u32* right_audio_memory)
 		usleep(20);
 
 	}
+
 }
 
 void playback_audio(u32* left_audio_memory, u32* right_audio_memory)
 {
 
-	u32  in_left, in_right;
+	/*u32  in_left, in_right;
 	u32* left_audio_memory_ptr = left_audio_memory;
 	u32* right_audio_memory_ptr = right_audio_memory;
 	u32 samples_left = 240000;
@@ -309,7 +308,24 @@ void playback_audio(u32* left_audio_memory, u32* right_audio_memory)
 
 		usleep(20);
 
+	}*/
+	xil_printf("STARTUP AUDIO PLAYINGGGGGGGGGGGGGGGGGGGGGGGGGG\n\r");
+
+	for (int i = 0; i < 278784; i++)
+	{
+		Xil_Out32(I2S_DATA_TX_L_REG, startupaudio[i][0]);
+		Xil_Out32(I2S_DATA_TX_R_REG, startupaudio[i][1]);
+
+		if (XUartPs_IsReceiveData(UART_BASEADDR)) {
+			if (XUartPs_ReadReg(UART_BASEADDR, XUARTPS_FIFO_OFFSET) == 'q'){
+				break;
+			}
+		}
+
+		usleep(20);
 	}
+	xil_printf("STARTUP AUDIO ENDINGGGGGGGGGGGGGGGGGGGGGGGGGG\n\r");
+
 }
 
 void playback_audio_spedup(u32* left_audio_memory, u32* right_audio_memory)
