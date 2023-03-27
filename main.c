@@ -4,6 +4,8 @@
  * Main source file. Contains main() and menu() functions.
  */
 #include "adventures_with_ip.h"
+#include "xil_mmu.h"
+#include <stdbool.h>
 
 
 /* ---------------------------------------------------------------------------- *
@@ -25,6 +27,10 @@ int main(void)
 	//enables the HP jack too.
 	AudioConfigureJacks();
 
+	// Audio mute signal
+	volatile bool* audio_mute_signal = (volatile bool*) 0x0F000000;
+	Xil_SetTlbAttributes((bool) audio_mute_signal, NORM_NONCACHE);
+
 	//Play initial pacman game start audio
 	for (int i = 0; i < STARTUPAUDIO_SAMPLE_SIZE; i++)
 	{
@@ -40,11 +46,19 @@ int main(void)
 
 		for (int i = 0; i < PLAYAUDIO_SAMPLE_SIZE; i++)
 		{
+			switch (*audio_mute_signal)
+			{
+				case true:
+					//no audio output
+					usleep(20);
+					break;
+				case false:
+					Xil_Out32(I2S_DATA_TX_L_REG, playaudio[i][0] / 4);
+					Xil_Out32(I2S_DATA_TX_R_REG, playaudio[i][1] / 4);
 
-			Xil_Out32(I2S_DATA_TX_L_REG, playaudio[i][0] / 4);
-			Xil_Out32(I2S_DATA_TX_R_REG, playaudio[i][1] / 4);
-
-			usleep(20);
+					usleep(20);
+					break;
+			}
 		}
 	}
 	//menu();
