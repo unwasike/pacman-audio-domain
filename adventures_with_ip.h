@@ -24,6 +24,9 @@
 
 #include "startupaudio.h"
 #include "playaudio.h"
+#include "pacmandiesaudio.h"
+#include "powerupaudio.h"
+#include "eatghostaudio.h"
 
 /* ---------------------------------------------------------------------------- *
  * 							Define GPIO Channels								*
