@@ -1,6 +1,6 @@
 #include "powerupaudio.h"
 
-signed long int powerupaudio[66816][2] = {
+signed long int powerupaudio[POWERUPAUDIO_SAMPLE_SIZE][2] = {
 {	0	,	0	}	,
 {	0	,	0	}	,
 {	0	,	0	}	,

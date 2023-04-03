@@ -1,6 +1,6 @@
 #include "eatghostaudio.h"
 
-signed long int eatghost_audio[160128][2] = {
+signed long int eatghost_audio[EATGHOSTAUDIO_SAMPLE_SIZE][2] = {
 {	0	,	0	}	,
 {	0	,	0	}	,
 {	0	,	0	}	,

@@ -1,6 +1,6 @@
 #include "pacmandiesaudio.h"
 
-signed long int pacmandiesaudio [82944][2] = {
+signed long int pacmandiesaudio [PACMANDIESAUDIO_SAMPLE_SIZE][2] = {
 {	0	,	0	}	,
 {	0	,	0	}	,
 {	0	,	0	}	,

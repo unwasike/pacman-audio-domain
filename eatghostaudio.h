@@ -1,6 +1,8 @@
 #ifndef EATGHOST_AUDIO_H_
 #define EATGHOST_AUDIO_H_
 
-signed long int eatghost_audio[160128][2];
+#define EATGHOSTAUDIO_SAMPLE_SIZE 160128
+
+signed long int eatghost_audio[EATGHOSTAUDIO_SAMPLE_SIZE][2];
 
 #endif /* EATGHOST_AUDIO_H_ */
