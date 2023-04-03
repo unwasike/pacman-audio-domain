@@ -42,8 +42,32 @@ int main(void)
 	volatile bool* eat_ghost_signal = (volatile bool*) 0x0F000003; // Pacman eats ghost
 	Xil_SetTlbAttributes((bool) eat_ghost_signal, NORM_NONCACHE);
 
+	volatile bool* menu_signal = (volatile bool*) 0x0F000004; // Pacman eats ghost
+	Xil_SetTlbAttributes((bool) menu_signal, NORM_NONCACHE);
+
+
+
 	//Play constant background audio in a loop
 	while(1){
+		
+		while (*menu_signal == true)
+		{
+			for (int i = 0; i < MENUAUDIO_SAMPLE_SIZE; i++)
+			{
+				switch (*audio_mute_signal)
+				{
+				case true:
+					//no audio output
+					usleep(20);
+					break;
+				case false:
+					Xil_Out32(I2S_DATA_TX_L_REG, menuaudio[i][0] / 4);
+					Xil_Out32(I2S_DATA_TX_R_REG, menuaudio[i][1] / 4);
+					usleep(20);
+					break;
+				}
+			}
+		}
 
 		//Play initial pacman game start audio
 		if (restart == true)
